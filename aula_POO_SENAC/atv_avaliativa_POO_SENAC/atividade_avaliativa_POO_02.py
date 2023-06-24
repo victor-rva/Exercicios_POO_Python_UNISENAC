@@ -140,16 +140,56 @@ class Visitante:
         return self.__documento
          
 class Visita:
-    def __init__(self, visitante, profissional, data_entrada):
+    def __init__(self, visitante, profissional, entrada):
         self.__visitante = visitante
         self.__profissional = profissional
-        self.__entrada = data_entrada
-
-
-
-
+        self.__entrada = entrada
+        
+    def get_visitante(self):
+        return self.__visitante
+        
+    def get_profissional(self):
+        return self.__profissional
+    
+    def get_entrada(self):
+        return self.__entrada        
+        
+        
 l_profissionais = []
 l_visitantes = []
+
+dicionario_visitas = {}
+
+def cadastrar_profissional():
+    nome = input("Digite o nome do profissional: ")
+    especialidade = input("Digite a especialidade do profissional: ")
+    sala = input("Digite a sala do profissional: ")
+    profissional = Profissional(nome, especialidade, sala)
+    l_profissionais.append(profissional)
+    print("Profissional cadastrado com sucesso!")
+
+def cadastrar_visitante():
+    nome = input("Digite o nome do visitante: ")
+    documento = input("Digite o documento do visitante: ")
+    visitante = Visitante(nome, documento)
+    l_visitantes.append(visitante)
+    print("Visitante cadastrado com sucesso!")
+
+def localizar_profissional():
+    pass
+
+def registrar_visita():
+    pass
+
+def relatorio_conferencia():
+    pass
+
+def gerar_arquivo_registros():
+    pass
+
+def ler_arquivos():
+    pass
+    
 
 menu = """======================
 MENU
@@ -162,4 +202,21 @@ MENU
 6- Gerar arquivo de Registros do dia
 7- Ler arquivos profissionais / visitantes
 Escolha:"""
+
+
+def main():
+    while True:
+        escolha = input(menu)
+        if escolha == "0": break
+        if escolha == "1": cadastrar_profissional()
+        if escolha == "2": cadastrar_visitante()
+        if escolha == "3": localizar_profissional()
+        if escolha == "4": registrar_visita()
+        if escolha == "5": relatorio_conferencia()
+        if escolha == "6": gerar_arquivo_registros()
+        if escolha == "7": ler_arquivos()
+            
+
+if __name__ == "__main__":
+    main()
 
