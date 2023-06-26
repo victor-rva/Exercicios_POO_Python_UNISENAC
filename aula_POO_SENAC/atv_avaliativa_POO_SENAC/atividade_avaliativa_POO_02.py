@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 """
  Tarefa 3
  Competências avaliadas:
@@ -176,19 +177,96 @@ def cadastrar_visitante():
     print("Visitante cadastrado com sucesso!")
 
 def localizar_profissional():
-    pass
+    opcao = input("Digite 1 para localizar pelo nome ou 2 para localizar pela especialidade: ")
+    if opcao == "1":
+        nome = input("Digite o nome do profissional: ")
+        for profissional in l_profissionais:
+            if profissional.get_nome().lower() == nome.lower():
+                print("Nome:", profissional.get_nome())
+                print("Especialidade:", profissional.get_especialidade())
+                print("Sala:", profissional.get_sala())
+                return
+        print("Profissional não encontrado.")
+    elif opcao == "2":
+        especialidade = input("Digite a especialidade do profissional: ")
+        for profissional in l_profissionais:
+            if profissional.get_especialidade().lower() == especialidade.lower():
+                print("Nome:", profissional.get_nome())
+                print("Especialidade:", profissional.get_especialidade())
+                print("Sala:", profissional.get_sala())
+                return
+        print("Profissional não encontrado.")
+    else:
+        print("Opção inválida.")
 
 def registrar_visita():
-    pass
+    print("Lista de visitantes:")
+    for i, visitante in enumerate(l_visitantes):
+        print(f"{i+1}. Nome: {visitante.get_nome()}, Documento: {visitante.get_documento()}")
+    
+    visitante_idx = int(input("Selecione o número do visitante: ")) - 1
+    
+    print("Lista de profissionais:")
+    for i, profissional in enumerate(l_profissionais):
+        print(f"{i+1}. Nome: {profissional.get_nome()}, Especialidade: {profissional.get_especialidade()}, Sala: {profissional.get_sala()}")
+    
+    profissional_idx = int(input("Selecione o número do profissional: ")) - 1
+    
+    data_entrada = datetime.now()
+    
+    visitante = l_visitantes[visitante_idx]
+    profissional = l_profissionais[profissional_idx]
+    
+    dicionario_visitas[visitante.get_documento()] = {
+        "nome_profissional": profissional.get_nome(),
+        "hora_entrada": data_entrada,
+        "sala": profissional.get_sala()
+    }
+    
+    print("Visita registrada com sucesso!")
 
 def relatorio_conferencia():
-    pass
+    print("Lista de profissionais:")
+    for i, profissional in enumerate(l_profissionais):
+        print(f"{i+1}. Nome: {profissional.get_nome()}, Especialidade: {profissional.get_especialidade()}, Sala: {profissional.get_sala()}")
+    
+    profissional_idx = int(input("Selecione o número do profissional: ")) - 1
+    
+    profissional = l_profissionais[profissional_idx]
+    
+    print(f"Relatório de conferência para o profissional {profissional.get_nome()}:")
+    
+    for documento, visita in dicionario_visitas.items():
+        if visita["nome_profissional"] == profissional.get_nome():
+            print("Visitante:", l_visitantes[int(documento)-1].get_nome())
+            print("Data da visita:", visita["hora_entrada"])
+            print()
 
 def gerar_arquivo_registros():
-    pass
+    arquivo = input("Digite o nome do arquivo: ")
+    
+    with open(arquivo, "w") as file:
+        json.dump(dicionario_visitas, file, indent=4)
+    
+    print(f"Arquivo '{arquivo}' gerado com sucesso!")
 
 def ler_arquivos():
-    pass
+    try:
+        with open("profissionais.txt", "r") as file:
+            for line in file:
+                nome, especialidade, sala = line.strip().split(":")
+                profissional = Profissional(nome, especialidade, sala)
+                l_profissionais.append(profissional)
+        
+        with open("visitantes.txt", "r") as file:
+            for line in file:
+                nome, documento = line.strip().split(":")
+                visitante = Visitante(nome, documento)
+                l_visitantes.append(visitante)
+        
+        print("Arquivos lidos com sucesso.")
+    except FileNotFoundError:
+        print("Arquivos não encontrados.")
     
 
 menu = """======================
