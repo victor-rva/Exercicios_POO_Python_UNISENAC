@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime
 """
  Tarefa 3
@@ -162,6 +163,9 @@ l_visitantes = []
 dicionario_visitas = {}
 
 def cadastrar_profissional():
+    """
+    Cadastra um profissional com nome, especialidade e sala e armazena na lista l_profissionais.
+    """
     nome = input("Digite o nome do profissional: ")
     especialidade = input("Digite a especialidade do profissional: ")
     sala = input("Digite a sala do profissional: ")
@@ -170,6 +174,9 @@ def cadastrar_profissional():
     print("Profissional cadastrado com sucesso!")
 
 def cadastrar_visitante():
+    """
+    Cadastra um visitante com nome e documento e armazena na lista l_visitantes.
+    """
     nome = input("Digite o nome do visitante: ")
     documento = input("Digite o documento do visitante: ")
     visitante = Visitante(nome, documento)
@@ -177,6 +184,9 @@ def cadastrar_visitante():
     print("Visitante cadastrado com sucesso!")
 
 def localizar_profissional():
+    """
+    Localiza um profissional pelo nome ou pela especialidade e exibe seu nome, especialidade e sala.
+    """
     opcao = input("Digite 1 para localizar pelo nome ou 2 para localizar pela especialidade: ")
     if opcao == "1":
         nome = input("Digite o nome do profissional: ")
@@ -200,16 +210,19 @@ def localizar_profissional():
         print("Opção inválida.")
 
 def registrar_visita():
+    """
+    Registra uma visita associando um visitante e um profissional, e armazena os dados da visita no dicionário dict_visitas.
+    """
     print("Lista de visitantes:")
     for i, visitante in enumerate(l_visitantes):
         print(f"{i+1}. Nome: {visitante.get_nome()}, Documento: {visitante.get_documento()}")
-    
+        #Ao usar i+1, o número exibido para o usuário corresponderá à posição do elemento na lista, de forma mais natural e compreensível.
     visitante_idx = int(input("Selecione o número do visitante: ")) - 1
-    
+    #Essa subtração de 1 é necessária para garantir que o índice selecionado corresponda corretamente ao elemento desejado na lista já que o python começa com índice a partir do número 0.
     print("Lista de profissionais:")
     for i, profissional in enumerate(l_profissionais):
         print(f"{i+1}. Nome: {profissional.get_nome()}, Especialidade: {profissional.get_especialidade()}, Sala: {profissional.get_sala()}")
-    
+        
     profissional_idx = int(input("Selecione o número do profissional: ")) - 1
     
     data_entrada = datetime.now()
@@ -226,6 +239,9 @@ def registrar_visita():
     print("Visita registrada com sucesso!")
 
 def relatorio_conferencia():
+    """
+    Gera um relatório de conferência mostrando todos os visitantes de um profissional e a data da visita.
+    """
     print("Lista de profissionais:")
     for i, profissional in enumerate(l_profissionais):
         print(f"{i+1}. Nome: {profissional.get_nome()}, Especialidade: {profissional.get_especialidade()}, Sala: {profissional.get_sala()}")
@@ -243,35 +259,64 @@ def relatorio_conferencia():
             print()
 
 def gerar_arquivo_registros():
-    arquivo = input("Digite o nome do arquivo: ")
-    
-    with open(arquivo, "w") as file:
-        json.dump(dicionario_visitas, file, indent=4)
-    
-    print(f"Arquivo '{arquivo}' gerado com sucesso!")
+    """
+    Gera um arquivo JSON com os registros de visita do dia.
+    """
+    registros = {}
+    for visitante, visita in dicionario_visitas.items():
+        registros[visitante] = {
+            "nome_profissional": visita["nome_profissional"],
+            "hora_entrada": visita["hora_entrada"],
+            "sala": visita["sala"]
+        }
+
+    nome_arquivo = input("Digite o nome do arquivo: ")
+    nome_arquivo += ".json"
+
+    with open(nome_arquivo, "w") as file:
+        json.dump(registros, file)
+
+    print("Arquivo de registros gerado com sucesso!")
 
 def ler_arquivos():
+    """
+    Lê os arquivos de texto "profissionais.txt" e "visitantes.txt" e preenche as listas l_profissionais e l_visitantes.
+    """
+    profissionais_file_path = "profissionais.txt"
+    visitantes_file_path = "visitantes.txt"
+
+    if not os.path.exists(profissionais_file_path) or not os.path.exists(visitantes_file_path):
+        #os.path.existspara verifica se os arquivos "profissionais.txt" e "visitantes.txt" existem antes de lê-los.
+        print("Arquivos não encontrados.")
+        return
+
     try:
-        with open("profissionais.txt", "r") as file:
-            for line in file:
-                nome, especialidade, sala = line.strip().split(":")
-                profissional = Profissional(nome, especialidade, sala)
+        with open(profissionais_file_path, "r") as profissionais_file:
+            linhas = profissionais_file.readlines()
+            #O método readlines()é aplicado a cada arquivo para obter uma lista de strings, onde cada string representa uma linha do arquivo.
+            for linha in linhas:
+                profissional_data = linha.strip().split(":")
+                #O método strip()é usado para remover espaços em branco, incluindo quebras de linha, do início e do final da linha.
+                #O método split(":")é aplicado para dividir a linha em uma lista de substrings, utilizando o caractere ":" como separador. Essa lista contém os dados do profissional: nome, especialidade e sala.
+                profissional = Profissional(profissional_data[0], profissional_data[1], profissional_data[2])
                 l_profissionais.append(profissional)
-        
-        with open("visitantes.txt", "r") as file:
-            for line in file:
-                nome, documento = line.strip().split(":")
-                visitante = Visitante(nome, documento)
+
+        with open(visitantes_file_path, "r") as visitantes_file:
+            linhas = visitantes_file.readlines()
+            for linha in linhas:
+                visitante_data = linha.strip().split(":")
+                visitante = Visitante(visitante_data[0], visitante_data[1])
                 l_visitantes.append(visitante)
-        
-        print("Arquivos lidos com sucesso.")
+
+        print("Arquivos lidos com sucesso!")
     except FileNotFoundError:
         print("Arquivos não encontrados.")
-    
+          
 
 menu = """======================
 MENU
 ======================
+0- Encerrar Programa
 1- Cadastrar Profissional
 2- Cadastrar Visitante
 3- Localizar Profissional
