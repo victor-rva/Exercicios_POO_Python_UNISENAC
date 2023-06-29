@@ -213,30 +213,28 @@ def registrar_visita():
     """
     Registra uma visita associando um visitante e um profissional, e armazena os dados da visita no dicionário dict_visitas.
     """
-    print("Lista de visitantes:")
+    documento = input("Digite o documento do visitante: ")
     for i, visitante in enumerate(l_visitantes):
-        print(f"{i+1}. Nome: {visitante.get_nome()}, Documento: {visitante.get_documento()}")
-        #Ao usar i+1, o número exibido para o usuário corresponderá à posição do elemento na lista, de forma mais natural e compreensível.
-    visitante_idx = int(input("Selecione o número do visitante: ")) - 1
-    #Essa subtração de 1 é necessária para garantir que o índice selecionado corresponda corretamente ao elemento desejado na lista já que o python começa com índice a partir do número 0.
-    print("Lista de profissionais:")
-    for i, profissional in enumerate(l_profissionais):
-        print(f"{i+1}. Nome: {profissional.get_nome()}, Especialidade: {profissional.get_especialidade()}, Sala: {profissional.get_sala()}")
-        
-    profissional_idx = int(input("Selecione o número do profissional: ")) - 1
-    
-    data_entrada = datetime.now()
-    
-    visitante = l_visitantes[visitante_idx]
-    profissional = l_profissionais[profissional_idx]
-    
-    dicionario_visitas[visitante.get_documento()] = {
-        "nome_profissional": profissional.get_nome(),
-        "hora_entrada": data_entrada,
-        "sala": profissional.get_sala()
-    }
-    
-    print("Visita registrada com sucesso!")
+        if visitante.get_documento() == documento:
+            print(i + 1, ". Visitante:", visitante.get_nome())
+            for j, profissional in enumerate(l_profissionais):
+                print(j + 1,". Profissional:", profissional.get_nome(), "- Especialidade:", profissional.get_especialidade())
+            opcao_profissional = int(input("Digite o número correspondente ao profissional visitado: "))
+            if opcao_profissional >= 1 and opcao_profissional <= len(l_profissionais):
+                profissional = l_profissionais[opcao_profissional - 1]
+                data_entrada = datetime.now().strftime("%Y-%m-%D %H:%M:%S")
+                visita = Visita(visitante, profissional, data_entrada)
+                dicionario_visitas[documento] = {
+                    "nome_profissional": profissional.get_nome(),
+                    "hora_entrada": data_entrada,
+                    "sala": profissional.get_sala()
+                }
+                print("Visita registrada com sucesso!")
+            else:
+                print("Opção inválida. Tente novamente.")
+            break
+    else:
+        print("Visitante não encontrado.")
 
 def relatorio_conferencia():
     """
@@ -246,37 +244,49 @@ def relatorio_conferencia():
     for i, profissional in enumerate(l_profissionais):
         print(f"{i+1}. Nome: {profissional.get_nome()}, Especialidade: {profissional.get_especialidade()}, Sala: {profissional.get_sala()}")
     
-    profissional_idx = int(input("Selecione o número do profissional: ")) - 1
+    profissional_index = int(input("Selecione o número do profissional: ")) - 1
     
-    profissional = l_profissionais[profissional_idx]
+    if profissional_index < 0 or profissional_index >= len(l_profissionais):
+        print("Índice inválido!")
+        return
+    
+    profissional = l_profissionais[profissional_index]
     
     print(f"Relatório de conferência para o profissional {profissional.get_nome()}:")
     
     for documento, visita in dicionario_visitas.items():
         if visita["nome_profissional"] == profissional.get_nome():
-            print("Visitante:", l_visitantes[int(documento)-1].get_nome())
-            print("Data da visita:", visita["hora_entrada"])
-            print()
+            if int(documento)-1 >= 0 and int(documento)-1 < len(l_visitantes):
+                visitante_nome = l_visitantes[int(documento)-1].get_nome()
+                print(f"Visitante: {visitante_nome}")
+                print(f"Data da Visita: {visita['hora_entrada']}")
+                print()
 
 def gerar_arquivo_registros():
     """
-    Gera um arquivo JSON com os registros de visita do dia.
+    Gera um arquivo JSON com os registros das visitas do dia.
     """
     registros = {}
-    for visitante, visita in dicionario_visitas.items():
-        registros[visitante] = {
-            "nome_profissional": visita["nome_profissional"],
-            "hora_entrada": visita["hora_entrada"],
-            "sala": visita["sala"]
+
+    for documento, visita_data in dicionario_visitas.items():
+        profissional_nome = visita_data["nome_profissional"]
+        hora_entrada = visita_data["hora_entrada"]
+        sala = visita_data["sala"]
+
+        registros[documento] = {
+            "nome_profissional": profissional_nome,
+            "hora_entrada": hora_entrada,
+            "sala": sala
         }
 
-    nome_arquivo = input("Digite o nome do arquivo: ")
-    nome_arquivo += ".json"
+    file_path = "registros_dia.json"
 
-    with open(nome_arquivo, "w") as file:
-        json.dump(registros, file)
-
-    print("Arquivo de registros gerado com sucesso!")
+    try:
+        with open(file_path, "w") as file:
+            json.dump(registros, file, indent=4)
+        print(f"Arquivo {file_path} gerado com sucesso!")
+    except Exception as e:
+        print(f"Erro ao gerar arquivo: {str(e)}")
 
 def ler_arquivos():
     """
@@ -286,7 +296,7 @@ def ler_arquivos():
     visitantes_file_path = "visitantes.txt"
 
     if not os.path.exists(profissionais_file_path) or not os.path.exists(visitantes_file_path):
-        #os.path.existspara verifica se os arquivos "profissionais.txt" e "visitantes.txt" existem antes de lê-los.
+        #os.path.exists servem para verificar se os arquivos "profissionais.txt" e "visitantes.txt" existem antes de lê-los.
         print("Arquivos não encontrados.")
         return
 
