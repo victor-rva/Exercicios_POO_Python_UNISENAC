@@ -160,7 +160,7 @@ class Visita:
 l_profissionais = []
 l_visitantes = []
 
-dicionario_visitas = {}
+dict_visitas = {}
 
 def cadastrar_profissional():
     """
@@ -224,7 +224,7 @@ def registrar_visita():
                 profissional = l_profissionais[opcao_profissional - 1]
                 data_entrada = datetime.now().strftime("%Y-%m-%D %H:%M:%S")
                 visita = Visita(visitante, profissional, data_entrada)
-                dicionario_visitas[documento] = {
+                dict_visitas[documento] = {
                     "nome_profissional": profissional.get_nome(),
                     "hora_entrada": data_entrada,
                     "sala": profissional.get_sala()
@@ -254,9 +254,9 @@ def relatorio_conferencia():
     
     print(f"Relatório de conferência para o profissional {profissional.get_nome()}:")
     
-    for documento, visita in dicionario_visitas.items():
+    for documento, visita in dict_visitas.items():
         if visita["nome_profissional"] == profissional.get_nome():
-            if int(documento)-1 >= 0 and int(documento)-1 < len(l_visitantes):
+            #if int(documento)-1 >= 0 and int(documento)-1 < len(l_visitantes):
                 visitante_nome = l_visitantes[int(documento)-1].get_nome()
                 print(f"Visitante: {visitante_nome}")
                 print(f"Data da Visita: {visita['hora_entrada']}")
@@ -268,7 +268,7 @@ def gerar_arquivo_registros():
     """
     registros = {}
 
-    for documento, visita_data in dicionario_visitas.items():
+    for documento, visita_data in dict_visitas.items():
         profissional_nome = visita_data["nome_profissional"]
         hora_entrada = visita_data["hora_entrada"]
         sala = visita_data["sala"]
@@ -283,7 +283,10 @@ def gerar_arquivo_registros():
 
     try:
         with open(file_path, "w") as file:
+            #as fileé garante que o objeto de arquivo seja fechado após a conclusão do bloco with.
             json.dump(registros, file, indent=4)
+            #A função json.dump()é utilizada para serializar o dicionário no formato JSON e gravá-lo no arquivo.
+            #O parâmetro indent=4é usado ao chamar a função json.dump()para especificar a quantidade de espaços a serem usados ​​na formatação do arquivo JSON
         print(f"Arquivo {file_path} gerado com sucesso!")
     except Exception as e:
         print(f"Erro ao gerar arquivo: {str(e)}")
