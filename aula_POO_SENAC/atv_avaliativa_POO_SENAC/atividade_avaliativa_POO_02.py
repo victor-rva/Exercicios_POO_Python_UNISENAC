@@ -223,7 +223,6 @@ def registrar_visita():
             if opcao_profissional >= 1 and opcao_profissional <= len(l_profissionais):
                 profissional = l_profissionais[opcao_profissional - 1]
                 data_entrada = datetime.now().strftime("%Y-%m-%D %H:%M:%S")
-                visita = Visita(visitante, profissional, data_entrada)
                 dict_visitas[documento] = {
                     "nome_profissional": profissional.get_nome(),
                     "hora_entrada": data_entrada,
@@ -253,15 +252,11 @@ def relatorio_conferencia():
     profissional = l_profissionais[profissional_index]
     
     print(f"Relatório de conferência para o profissional {profissional.get_nome()}:")
-    
-    for documento, visita in dict_visitas.items():
-        if visita["nome_profissional"] == profissional.get_nome():
-            #if int(documento)-1 >= 0 and int(documento)-1 < len(l_visitantes):
-                visitante_nome = l_visitantes[int(documento)-1].get_nome()
-                print(f"Visitante: {visitante_nome}")
-                print(f"Data da Visita: {visita['hora_entrada']}")
-                print()
-
+    for nome_profissional, info in dict_visitas.items():
+        if info['nome_profissional'] == nome_profissional:
+                print(f"Visitante: {info['visitante'].get_nome()} | Data da visita: {info['hora_entrada']}")
+        print()
+        
 def gerar_arquivo_registros():
     """
     Gera um arquivo JSON com os registros das visitas do dia.
@@ -295,35 +290,20 @@ def ler_arquivos():
     """
     Lê os arquivos de texto "profissionais.txt" e "visitantes.txt" e preenche as listas l_profissionais e l_visitantes.
     """
-    profissionais_file_path = "profissionais.txt"
-    visitantes_file_path = "visitantes.txt"
-
-    if not os.path.exists(profissionais_file_path) or not os.path.exists(visitantes_file_path):
-        #os.path.exists servem para verificar se os arquivos "profissionais.txt" e "visitantes.txt" existem antes de lê-los.
-        print("Arquivos não encontrados.")
-        return
-
     try:
-        with open(profissionais_file_path, "r") as profissionais_file:
-            linhas = profissionais_file.readlines()
-            #O método readlines()é aplicado a cada arquivo para obter uma lista de strings, onde cada string representa uma linha do arquivo.
-            for linha in linhas:
-                profissional_data = linha.strip().split(":")
-                #O método strip()é usado para remover espaços em branco, incluindo quebras de linha, do início e do final da linha.
-                #O método split(":")é aplicado para dividir a linha em uma lista de substrings, utilizando o caractere ":" como separador. Essa lista contém os dados do profissional: nome, especialidade e sala.
-                profissional = Profissional(profissional_data[0], profissional_data[1], profissional_data[2])
+        with open('profissionais.txt', 'r') as file:
+            for line in file:
+                nome, especialidade, sala = line.strip().split(':')
+                profissional = Profissional(nome, especialidade, sala)
                 l_profissionais.append(profissional)
 
-        with open(visitantes_file_path, "r") as visitantes_file:
-            linhas = visitantes_file.readlines()
-            for linha in linhas:
-                visitante_data = linha.strip().split(":")
-                visitante = Visitante(visitante_data[0], visitante_data[1])
+        with open('visitantes.txt', 'r') as file:
+            for line in file:
+                nome, documento = line.strip().split(':')
+                visitante = Visitante(nome, documento)
                 l_visitantes.append(visitante)
-
-        print("Arquivos lidos com sucesso!")
     except FileNotFoundError:
-        print("Arquivos não encontrados.")
+        print("Arquivo não encontrado.")
           
 
 menu = """======================
@@ -336,12 +316,12 @@ MENU
 4- Registrar Visita
 5- Relatório de Conferência
 6- Gerar arquivo de Registros do dia
-7- Ler arquivos profissionais / visitantes
 Escolha:"""
 
 
 def main():
     while True:
+        ler_arquivos()
         escolha = input(menu)
         if escolha == "0": break
         if escolha == "1": cadastrar_profissional()
@@ -349,9 +329,8 @@ def main():
         if escolha == "3": localizar_profissional()
         if escolha == "4": registrar_visita()
         if escolha == "5": relatorio_conferencia()
-        if escolha == "6": gerar_arquivo_registros()
-        if escolha == "7": ler_arquivos()
-            
+        if escolha == "6": gerar_arquivo_registros()   
+
 
 if __name__ == "__main__":
     main()
