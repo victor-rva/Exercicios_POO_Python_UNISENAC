@@ -253,6 +253,7 @@ def relatorio_conferencia():
     
     print(f"Relatório de conferência para o profissional {profissional.get_nome()}:")
     for nome_profissional, info in dict_visitas.items():
+        print("ZZZZ")
         if info['nome_profissional'] == nome_profissional:
                 print(f"Visitante: {info['visitante'].get_nome()} | Data da visita: {info['hora_entrada']}")
         print()
@@ -278,33 +279,63 @@ def gerar_arquivo_registros():
 
     try:
         with open(file_path, "w") as file:
-            #as fileé garante que o objeto de arquivo seja fechado após a conclusão do bloco with.
+            #as file garante que o objeto de arquivo seja fechado após a conclusão do bloco with.
             json.dump(registros, file, indent=4)
             #A função json.dump()é utilizada para serializar o dicionário no formato JSON e gravá-lo no arquivo.
             #O parâmetro indent=4é usado ao chamar a função json.dump()para especificar a quantidade de espaços a serem usados ​​na formatação do arquivo JSON
         print(f"Arquivo {file_path} gerado com sucesso!")
     except Exception as e:
         print(f"Erro ao gerar arquivo: {str(e)}")
+        # a mensagem de erro será exibida utilizando a expressão {str(e)}, onde e é a variável que contém a exceção capturada.
 
 def ler_arquivos():
     """
     Lê os arquivos de texto "profissionais.txt" e "visitantes.txt" e preenche as listas l_profissionais e l_visitantes.
     """
+    profissionais_file_path = "profissionais.txt"
+    visitantes_file_path = "visitantes.txt"
     try:
-        with open('profissionais.txt', 'r') as file:
+        print("11111")
+        with open(profissionais_file_path, 'r') as profissionais_file_path:
+            print("AAAA")
+            file = profissionais_file_path
             for line in file:
+                print("BBBB")
                 nome, especialidade, sala = line.strip().split(':')
                 profissional = Profissional(nome, especialidade, sala)
                 l_profissionais.append(profissional)
 
-        with open('visitantes.txt', 'r') as file:
-            for line in file:
+        with open(visitantes_file_path, 'r') as visitantes_file_path:
+            print("22222")
+            file = visitantes_file_path
+            for line in file:   
+                print("CCCCC")
                 nome, documento = line.strip().split(':')
                 visitante = Visitante(nome, documento)
                 l_visitantes.append(visitante)
     except FileNotFoundError:
         print("Arquivo não encontrado.")
           
+    """try:
+        print("11111")
+        with open('profissionais.txt', 'r') as file:
+            print("AAAA")
+            for line in file:
+                print("BBBB")
+                nome, especialidade, sala = line.strip().split(':')
+                profissional = Profissional(nome, especialidade, sala)
+                l_profissionais.append(profissional)
+
+        with open('visitantes.txt', 'r') as file:
+            print("22222")
+            for line in file:
+                print("CCCCC")
+                nome, documento = line.strip().split(':')
+                visitante = Visitante(nome, documento)
+                l_visitantes.append(visitante)
+    except FileNotFoundError:
+        print("Arquivo não encontrado.")
+          """
 
 menu = """======================
 MENU
