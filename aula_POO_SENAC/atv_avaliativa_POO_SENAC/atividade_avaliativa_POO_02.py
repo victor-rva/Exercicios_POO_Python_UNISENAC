@@ -303,6 +303,8 @@ def ler_arquivos():
         with open('profissionais.txt', 'r') as file:
             for line in file:
                 nome, especialidade, sala = line.strip().split(':')
+                #O método strip()é usado para remover espaços em branco, incluindo quebras de linha, do início e do final da linha.
+                #O método split(":")é aplicado para dividir a linha em uma lista de substrings, utilizando o caractere ":" como separador. Essa lista contém os dados do profissional: nome, especialidade e sala.
                 profissional = Profissional(nome, especialidade, sala)
                 l_profissionais.append(profissional)
 
