@@ -296,25 +296,37 @@ def gerar_arquivo_registros():
 
 def ler_arquivos():
     """
-    Lê os arquivos de texto "profissionais.txt" e "visitantes.txt" e converte os dados para JSON.
+    Lê os arquivos de texto "profissionais.txt" e "visitantes.txt" e preenche as listas l_profissionais e l_visitantes.
     """
-          
+    profissionais_file_path = "profissionais.txt"
+    visitantes_file_path = "visitantes.txt"
+
+    if not os.path.exists(profissionais_file_path) or not os.path.exists(visitantes_file_path):
+        #os.path.exists servem para verificar se os arquivos "profissionais.txt" e "visitantes.txt" existem antes de lê-los.
+        print("Arquivos não encontrados.")
+        return
+
     try:
-        with open('profissionais.txt', 'r') as file:
-            for line in file:
+        with open(profissionais_file_path, "r") as profissionais_file:
+            files = profissionais_file.readlines()
+            #O método readlines()é aplicado a cada arquivo para obter uma lista de strings, onde cada string representa uma linha do arquivo.
+            for line in files:
                 nome, especialidade, sala = line.strip().split(':')
-                #O método strip()é usado para remover espaços em branco, incluindo quebras de linha, do início e do final da linha.
-                #O método split(":")é aplicado para dividir a linha em uma lista de substrings, utilizando o caractere ":" como separador. Essa lista contém os dados do profissional: nome, especialidade e sala.
+                # O método strip()é usado para remover espaços em branco, incluindo quebras de linha, do início e do final da linha.
+                # O método split(":")é aplicado para dividir a linha em uma lista de substrings, utilizando o caractere ":" como separador. Essa lista contém os dados do profissional: nome, especialidade e sala.
                 profissional = Profissional(nome, especialidade, sala)
                 l_profissionais.append(profissional)
 
-        with open('visitantes.txt', 'r') as file:
-            for line in file:
+        with open(visitantes_file_path, "r") as visitantes_file:
+            files = visitantes_file.readlines()
+            for line in files:
                 nome, documento = line.strip().split(':')
                 visitante = Visitante(nome, documento)
                 l_visitantes.append(visitante)
+
+        print("Arquivos lidos com sucesso!")
     except FileNotFoundError:
-        print("Arquivo não encontrado.")
+        print("Erro ao procurar arquivos.")
 
 
 menu = """======================
